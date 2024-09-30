@@ -37,7 +37,7 @@ export interface  LoginResponse  {
 export const signupUser = createAsyncThunk(
     'auth/signupUser',
     async(userData: SignUpPayload) => {
-        const  response = await axios.post('http://localhost:5000/api/auth/signup', userData);
+        const  response = await axios.post('https://bike-rental-reservation-system-backend-zeta.vercel.app/api/auth/signup', userData);
         return response.data;
     }
 );
@@ -45,7 +45,7 @@ export const signupUser = createAsyncThunk(
 export const loginUser = createAsyncThunk<LoginResponse, LoginPayload >(
     "auth/loginUser",
     async(loginData: LoginPayload ) => {
-        const  response = await axios.post('http://localhost:5000/api/auth/login', loginData);
+        const  response = await axios.post('https://bike-rental-reservation-system-backend-zeta.vercel.app/api/auth/login', loginData);
         return response.data;
     }
 )

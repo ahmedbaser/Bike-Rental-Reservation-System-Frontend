@@ -18,7 +18,7 @@ const HeroSection = () => {
 
     setLoading(true);
     try {
-      const response = await axios.get(`http://localhost:5000/api/bikes/search?q=${value}`);
+      const response = await axios.get(`https://bike-rental-reservation-system-backend-zeta.vercel.app/api/bikes/search?q=${value}`);
       if (response.data.success) {
         if (response.data.bikes.length === 0) {
           message.info('Bike Not Found');

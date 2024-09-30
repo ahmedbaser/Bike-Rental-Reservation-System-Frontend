@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Table, Button, Modal, Form, Input, message, Col, Row } from 'antd';
-import { fetchCoupons,createCoupon, updateCoupon, deleteCoupon } from '../../redux/store/actions/couponActions';
+import moment from 'moment-timezone'; 
+import { fetchCoupons, createCoupon, updateCoupon, deleteCoupon } from '../../redux/store/actions/couponActions';
 import { AppDispatch } from '../../redux/store';
 
 const CouponManagementPage: React.FC = () => {
@@ -16,9 +17,26 @@ const CouponManagementPage: React.FC = () => {
     dispatch(fetchCoupons());
   }, [dispatch]);
 
+  useEffect(() => {
+    if (error) {
+      message.error(error);
+    }
+  }, [error]);
+
   const handleCreateOrUpdate = (values: any) => {
+    const { expirationDate } = values;
+    // Convert expirationDate to Bangladesh time zone and format it to include AM/PM
+    const expirationDateInBST = moment(expirationDate)
+      .tz('Asia/Dhaka')
+      .format('YYYY-MM-DD hh:mm A'); // Format to show in 12-hour with AM/PM
+
+    const couponData = {
+      ...values,
+      expirationDate: expirationDateInBST,
+    };
+
     if (isEditMode && selectedCoupon) {
-      dispatch(updateCoupon(selectedCoupon._id, values))
+      dispatch(updateCoupon(selectedCoupon._id, couponData))
         .then(() => {
           message.success('Coupon updated successfully');
           setIsModalVisible(false);
@@ -28,7 +46,7 @@ const CouponManagementPage: React.FC = () => {
           message.error('Failed to update coupon');
         });
     } else {
-      dispatch(createCoupon(values))
+      dispatch(createCoupon(couponData))
         .then(() => {
           message.success('Coupon created successfully');
           setIsModalVisible(false);
@@ -46,7 +64,7 @@ const CouponManagementPage: React.FC = () => {
     form.setFieldsValue({
       code: coupon.code,
       discount: coupon.discount,
-      expirationDate: coupon.expirationDate,
+      expirationDate: moment(coupon.expirationDate).tz('Asia/Dhaka').format('YYYY-MM-DD'), // Display date in BST
     });
     setIsModalVisible(true);
   };
@@ -76,16 +94,19 @@ const CouponManagementPage: React.FC = () => {
       title: 'Expiration Date',
       dataIndex: 'expirationDate',
       key: 'expirationDate',
+      render: (date: string) => moment(date)
+        .tz('Asia/Dhaka')
+        .format('YYYY-MM-DD hh:mm A'), // Format with AM/PM
     },
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (_: unknown, record: any) => (
         <div className="space-x-2">
           <Button type="primary" onClick={() => handleEdit(record)}>
             Edit
           </Button>
-          <Button type="danger" onClick={() => handleDelete(record._id)}>
+          <Button type="default" danger onClick={() => handleDelete(record._id)}>
             Delete
           </Button>
         </div>
@@ -101,17 +122,13 @@ const CouponManagementPage: React.FC = () => {
   };
 
   return (
-     <div className="container mx-auto p-4">
-     
-        <Col xs={24} md={16} lg={12}>
-          <h1 className="text-2xl md:text-2xl mb-4 text-center md:text-left">Coupon Management</h1>
-        </Col>
-        
-          <Button className='mb-4' type="primary" onClick={showModal}>
-            Create Coupon
-          </Button>
-      
-
+    <div className="container mx-auto p-4">
+      <Col xs={24} md={16} lg={12}>
+        <h1 className="text-2xl md:text-2xl mb-4 text-center md:text-left">Coupon Management</h1>
+      </Col>
+      <Button className="mb-4" type="primary" onClick={showModal}>
+        Create Coupon
+      </Button>
       <Row>
         <Col xs={24}>
           <Table
@@ -119,7 +136,7 @@ const CouponManagementPage: React.FC = () => {
             dataSource={coupons}
             rowKey="_id"
             loading={loading}
-            scroll={{ x: 600 }} 
+            scroll={{ x: 600 }}
           />
         </Col>
       </Row>
@@ -168,3 +185,10 @@ const CouponManagementPage: React.FC = () => {
 };
 
 export default CouponManagementPage;
+
+
+
+
+
+
+

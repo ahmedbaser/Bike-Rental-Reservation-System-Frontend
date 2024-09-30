@@ -7,7 +7,7 @@ import { ColumnsType } from 'antd/es/table';
 
 const UserManagement: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
-  const { users, loading, error } = useSelector((state: any) => state.user);
+  const { users, loading } = useSelector((state: any) => state.user);  
 
   useEffect(() => {
     dispatch(fetchUsers());
@@ -70,18 +70,20 @@ const UserManagement: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (record: any) => (
         <div className="flex flex-col space-y-2 sm:flex-row sm:space-y-0 sm:space-x-2">
-          <Popconfirm
-            title="Are you sure to delete this user?"
-            onConfirm={() => handleDelete(record._id)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button type="primary" danger className="w-full sm:w-auto">
-              Delete
-            </Button>
-          </Popconfirm>
+          {record.role !== 'admin' && (
+            <Popconfirm
+              title="Are you sure to delete this user?"
+              onConfirm={() => handleDelete(record._id)}
+              okText="Yes"
+              cancelText="No"
+            >
+              <Button type="primary" danger className="w-full sm:w-auto">
+                Delete
+              </Button>
+            </Popconfirm>
+          )}
           {record.role !== 'admin' && (
             <Button type="primary" onClick={() => handlePromote(record._id)} className="w-full sm:w-auto">
               Promote to Admin
@@ -93,7 +95,6 @@ const UserManagement: React.FC = () => {
   ];
 
   return (
-   
     <div className="container mx-auto p-6">
       <h1 className="text-2xl md:text-2xl mb-4 text-center md:text-left">User Management</h1>
       {/* Scrollable table for smaller devices */}
@@ -105,18 +106,8 @@ const UserManagement: React.FC = () => {
         scroll={{ x: 1000 }}  
         pagination={{ pageSize: 10 }}  
       />
-  </div>
+    </div>
   );
 };
 
 export default UserManagement;
-
-
-
-
-
-
-
-
-
-

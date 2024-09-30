@@ -47,7 +47,7 @@ const AppFooter: React.FC = () => {
         </Row>
 
         <div className="text-center mt-8">
-          <p className="text-sm text-gray-500">Your Company. All Rights Reserved.</p>
+          <p className="text-sm text-white">Your Company. All Rights Reserved.</p>
         </div>
       </div>
     </Footer>

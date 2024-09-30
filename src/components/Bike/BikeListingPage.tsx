@@ -1,4 +1,4 @@
-import { Button, Card, Input } from "antd";
+import { Button, Card, Input, Spin } from "antd";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../redux/store/index";
 import { useEffect, useState } from "react";
@@ -8,13 +8,20 @@ import { fetchBikes } from "../../redux/store/actions/bikeActions";
 const BikeListingPage: React.FC = () => {
   const dispatch: AppDispatch = useDispatch();
   const bikes = useSelector((state: RootState) => state.bike.bikes);
+  const [loading, setLoading] = useState(true); 
 
   const [brandFilter, setBrandFilter] = useState<string>('');
   const [modelFilter, setModelFilter] = useState<string>('');
   const [availabilityFilter, setAvailabilityFilter] = useState<string>('');
 
   useEffect(() => {
-    dispatch(fetchBikes());
+    const fetchData = async () => {
+      setLoading(true); 
+      await dispatch(fetchBikes());
+      setLoading(false); 
+    };
+
+    fetchData();
   }, [dispatch]);
 
   useEffect(() => {
@@ -39,6 +46,7 @@ const BikeListingPage: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <h2 className="text-2xl md:text-2xl mb-4 text-center md:text-left">Available Bikes</h2>
+      
       <div className="flex space-x-4 mb-6">
         <Input
           placeholder="Filter by Brand"
@@ -52,35 +60,48 @@ const BikeListingPage: React.FC = () => {
           onChange={(e) => setModelFilter(e.target.value)}
           className="w-1/2"
         />
-        <select value={availabilityFilter} onChange={(e) => setAvailabilityFilter(e.target.value)} className="border p-2">
+        <select
+          value={availabilityFilter}
+          onChange={(e) => setAvailabilityFilter(e.target.value)}
+          className="border p-2"
+        >
           <option value="">All</option>
           <option value="available">Available</option>
           <option value="notAvailable">Not Available</option>
         </select>
-        <Button onClick={filteredBikes} type="primary">
-          Apply Filters
+        <Button
+          onClick={() => {
+            setBrandFilter('');
+            setModelFilter('');
+            setAvailabilityFilter('');
+          }}
+          type="primary"
+        >
+          Clear Filters
         </Button>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {filteredBikes.map((bike) => (
-          <Card key={bike._id}>
-            <p>Brand: {bike.brand}</p>
-            <p>Model: {bike.model}</p>
-            <p>Availability: {bike.isAvailable ? 'Available' : 'Not Available at the moment'}</p>
-            <Link to={`/bike-management/${bike._id}`}>
-              <Button type="primary">View Details</Button>
-            </Link>
-          </Card>
-        ))}
-      </div>
+
+      {/* Display loading spinner when loading */}
+      {loading ? (
+        <div className="flex justify-center items-center h-64">
+          <Spin style={{ fontSize: '40px' }} />
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {filteredBikes.map((bike) => (
+            <Card key={bike._id}>
+              <p>Brand: {bike.brand}</p>
+              <p>Model: {bike.model}</p>
+              <p>Availability: {bike.isAvailable ? 'Available' : 'Not Available at the moment'}</p>
+              <Link to={`/bike-management/${bike._id}`}>
+                <Button type="primary">View Details</Button>
+              </Link>
+            </Card>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 export default BikeListingPage;
-
-
-
-
-
-

@@ -6,35 +6,32 @@ import { fetchAllRentals, returnBike } from '../../redux/store/actions/rentalAct
 
 const RentalManagement: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
+  
   const { rentals, loading } = useSelector((state: RootState) => state.rental);
 
   useEffect(() => {
     dispatch(fetchAllRentals()); 
   }, [dispatch]);
 
-  const calculateTotalCost = (startTime: string, endTime: string) => {
-    if (!startTime || !endTime) return 0;
+  const calculateTotalCost = (startTime: string, returnTime: string) => {
+    if (!startTime || !returnTime) return 0;
 
     const start = new Date(startTime);
-    const end = new Date(endTime);
+    const end = new Date(returnTime);
 
     const durationInMilliseconds = end.getTime() - start.getTime();
-
     const durationInHours = durationInMilliseconds / (1000 * 60 * 60);
-
     const hourlyRate = 20; 
 
     // Calculate the total cost
-    const totalCost = Math.max(durationInHours * hourlyRate, 0); 
-
-    return totalCost;
+    return Math.max(durationInHours * hourlyRate, 0); 
   };
 
   const handleReturnBike = async (rentalId: string, startTime: string) => {
     try {
-      const endTime = new Date().toISOString();
-      const totalCost = calculateTotalCost(startTime, endTime);
-      await dispatch(returnBike(rentalId, { endTime, totalCost }));
+      const returnTime = new Date().toISOString();
+      const totalCost = calculateTotalCost(startTime, returnTime);
+      await dispatch(returnBike(rentalId, { returnTime, totalCost }));
       message.success('Bike returned successfully');
     } catch {
       message.error('Failed to return bike');
@@ -50,9 +47,9 @@ const RentalManagement: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (record: any) => (
         <>
-          {!record.endTime && (
+          {!record.returnTime && (
             <Button onClick={() => handleReturnBike(record._id, record.startTime)}>Return Bike</Button>
           )}
         </>
@@ -69,21 +66,6 @@ const RentalManagement: React.FC = () => {
 };
 
 export default RentalManagement;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

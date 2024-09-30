@@ -7,7 +7,7 @@ import { RootState } from "../index";
 export const updateUserProfile = (userData: UserData) => async(dispatch: Dispatch, getState: () => RootState) => {
     try {
         const token = getState().auth.token;
-        console.log("Token", token)
+        console.log("Token", token);
        
         const config = {
             headers: {
@@ -16,34 +16,39 @@ export const updateUserProfile = (userData: UserData) => async(dispatch: Dispatc
             },
         };
       
-        const response = await axios.put('http://localhost:5000/api/users/profile', userData, config);
+        const response = await axios.put('https://bike-rental-reservation-system-backend-zeta.vercel.app/api/users/profile', userData, config);
         dispatch({
             type: 'USER_UPDATE_PROFILE_SUCCESS',
             payload: response.data,
         });
 
-    } catch(error) {
-        if(axios.isAxiosError(error) && error.message) {
+    } catch (error) {
+        if (axios.isAxiosError(error) && error.response?.data.message) {
             dispatch({
                 type: 'USER_UPDATE_PROFILE_FAIL',
-                payload: error.response?.data.message || error.message,
+                payload: error.response?.data.message || 'An error occurred while updating profile',
+            });
+        } else if (error instanceof Error) {
+            dispatch({
+                type: 'USER_UPDATE_PROFILE_FAIL',
+                payload: error.message,
             });
         } else {
             dispatch({
                 type: 'USER_UPDATE_PROFILE_FAIL',
-                payload: error instanceof Error ? error.message : 'An unknown error occurred',
+                payload: 'An unknown error occurred',
             });
         }
 
-      throw error;
-  }
+        throw error;
+    }
 };
 
-
+// Fetch Users Action (Admin Pages)
 export const fetchUsers = () => async (dispatch: any, getState: () => RootState) => {
-    dispatch({ type: 'LOADING_USERS' });  // Loading state before fetching users
+    dispatch({ type: 'LOADING_USERS' });
     try {
-        const token = getState().auth.token;  // Get the token from auth state
+        const token = getState().auth.token;
 
         const config = {
             headers: {
@@ -51,28 +56,35 @@ export const fetchUsers = () => async (dispatch: any, getState: () => RootState)
             },
         };
 
-        const response = await axios.get('http://localhost:5000/api/users/all', config);
+        const response = await axios.get('https://bike-rental-reservation-system-backend-zeta.vercel.app/api/users/all', config);
         dispatch({
             type: 'FETCH_USERS_SUCCESS',
             payload: response.data.data,
         });
     } catch (error) {
-        dispatch({
-            type: 'FETCH_USERS_FAIL',
-            payload: error.message,
-        });
+        if (axios.isAxiosError(error)) {
+            dispatch({
+                type: 'FETCH_USERS_FAIL',
+                payload: error.response?.data.message || error.message,
+            });
+        } else if (error instanceof Error) {
+            dispatch({
+                type: 'FETCH_USERS_FAIL',
+                payload: error.message,
+            });
+        } else {
+            dispatch({
+                type: 'FETCH_USERS_FAIL',
+                payload: 'An unknown error occurred',
+            });
+        }
     }
 };
-
-
-
-
-
 
 // Delete User Action (Admin Pages)
 export const deleteUser = (id: string) => async (dispatch: any, getState: () => RootState) => {
     try {
-        const token = getState().auth.token;  // Get the token from auth state
+        const token = getState().auth.token;
 
         const config = {
             headers: {
@@ -80,25 +92,35 @@ export const deleteUser = (id: string) => async (dispatch: any, getState: () => 
             },
         };
 
-        await axios.delete(`http://localhost:5000/api/users/${id}`, config);
+        await axios.delete(`https://bike-rental-reservation-system-backend-zeta.vercel.app/api/users/${id}`, config);
         dispatch({
             type: 'DELETE_USER_SUCCESS',
             payload: id,
         });
     } catch (error) {
-        dispatch({
-            type: 'DELETE_USER_FAIL',
-            payload: error.message,
-        });
+        if (axios.isAxiosError(error)) {
+            dispatch({
+                type: 'DELETE_USER_FAIL',
+                payload: error.response?.data.message || error.message,
+            });
+        } else if (error instanceof Error) {
+            dispatch({
+                type: 'DELETE_USER_FAIL',
+                payload: error.message,
+            });
+        } else {
+            dispatch({
+                type: 'DELETE_USER_FAIL',
+                payload: 'An unknown error occurred',
+            });
+        }
     }
 };
 
-
 // Promote User to Admin Action (Admin Pages)
-
 export const promoteToAdmin = (id: string) => async (dispatch: any, getState: () => RootState) => {
     try {
-        const token = getState().auth.token;  // Get the token from auth state
+        const token = getState().auth.token;
 
         const config = {
             headers: {
@@ -106,19 +128,29 @@ export const promoteToAdmin = (id: string) => async (dispatch: any, getState: ()
             },
         };
 
-        const response = await axios.patch(`http://localhost:5000/api/users/promote/${id}`, {}, config);
+        const response = await axios.patch(`https://bike-rental-reservation-system-backend-zeta.vercel.app/api/users/promote/${id}`, {}, config);
         dispatch({
             type: 'PROMOTE_USER_SUCCESS',
             payload: response.data.data,
         });
     } catch (error) {
-        dispatch({
-            type: 'PROMOTE_USER_FAIL',
-            payload: error.message,
-        });
+        if (axios.isAxiosError(error)) {
+            dispatch({
+                type: 'PROMOTE_USER_FAIL',
+                payload: error.response?.data.message || error.message,
+            });
+        } else if (error instanceof Error) {
+            dispatch({
+                type: 'PROMOTE_USER_FAIL',
+                payload: error.message,
+            });
+        } else {
+            dispatch({
+                type: 'PROMOTE_USER_FAIL',
+                payload: 'An unknown error occurred',
+            });
+        }
     }
 };
-
-
 
 

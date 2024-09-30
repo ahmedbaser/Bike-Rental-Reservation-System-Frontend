@@ -29,9 +29,10 @@ const BookingModal: React.FC<BookingModalProps> = ({bikeId, visible, onClose}) =
             const rental = result;
 
             if (rental && rental._id) {
-                message.success(`Booking confirmed! Bike: ${rental.bikeName}. You will be redirected to the payment page.`);
+                message.success(`Booking confirmed! You will be redirected to the payment page.`);
                 onClose(); 
-                navigate(`/payment/${rental._id}`);  
+                navigate(`/payment/${rental._id}`); 
+             
             } else {
                 console.error('Rental data is undefined or missing _id:', rental);
                 message.error('Booking failed. Please try again.');
@@ -42,6 +43,9 @@ const BookingModal: React.FC<BookingModalProps> = ({bikeId, visible, onClose}) =
         }
     };
 
+ 
+    
+    
     return (
         <Modal 
             title="Book Your Bike" 

@@ -2,9 +2,9 @@ import { Card } from "antd";
 
 const TeamSection  = () => {
     const teamMembers = [
-        {id: 1, name: "John Doe", role:"CEO", bio: "John is the visionary behind our platform...", photo: "src/images/image1.jpg"},
-        {id: 2, name: "Jane Smith", role:"CTO", bio: "Jane leads our tech team with expertise in...", photo: "src/images/image2.jpg"},
-        {id: 2, name: "Emily Johnson", role:"COO", bio: "Jane leads our tech team with expertise in...", photo: "src/images/image4.jpg"}
+        {id: 1, name: "John Doe", role:"CEO", bio: "John is the visionary behind our platform...", photo: "/images/image1.jpg"},
+        {id: 2, name: "Jane Smith", role:"CTO", bio: "Jane leads our tech team with expertise in...", photo: "/images/image2.jpg"},
+        {id: 2, name: "Emily Johnson", role:"COO", bio: "Jane leads our tech team with expertise in...", photo: "/images/image4.jpg"}
     ];
 
     return (

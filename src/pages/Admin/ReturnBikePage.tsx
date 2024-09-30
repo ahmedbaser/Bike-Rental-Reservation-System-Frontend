@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Modal, Input, notification } from 'antd';
+import { Button, Table, Modal, Input, notification, Spin } from 'antd'; 
 import axios from 'axios';
-import { useMediaQuery } from 'react-responsive';
-import dayjs from 'dayjs'; 
+import dayjs from 'dayjs';
 
 interface Bike {
   _id: string;
@@ -32,31 +31,38 @@ const ReturnBikePage: React.FC = () => {
   const [rentals, setRentals] = useState<BikeRental[]>([]);
   const [selectedRental, setSelectedRental] = useState<BikeRental | null>(null);
   const [endTime, setEndTime] = useState<string>('');
-
-  const isMobile = useMediaQuery({ query: '(max-width: 768px)' });
+  const [loading, setLoading] = useState<boolean>(true); 
 
   useEffect(() => {
     const fetchRentals = async () => {
       try {
+        setLoading(true); 
         const token = localStorage.getItem('token');
-        const response = await axios.get('http://localhost:5000/api/rentals/admin', { 
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        if (!token) {
+          notification.error({
+            message: 'Error',
+            description: 'Token not found. Please log in.',
+          });
+          return;
+        }
+
+        const response = await axios.get(
+          'https://bike-rental-reservation-system-backend-zeta.vercel.app/api/rentals/admin', 
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
 
         const fetchedRentals = response.data.data;
-        console.log('Fetched Rentals:', fetchedRentals);
-
         const validRentals = fetchedRentals.filter((rental: BikeRental) => rental.bikeId);
+        setRentals(validRentals);
 
-        setRentals(validRentals); 
       } catch (error) {
         console.error('Failed to fetch rentals', error);
         notification.error({
           message: 'Error',
           description: 'Failed to fetch rentals. Please try again.',
         });
+      } finally {
+        setLoading(false); 
       }
     };
 
@@ -75,12 +81,17 @@ const ReturnBikePage: React.FC = () => {
           return;
         }
 
+        const startTime = dayjs(selectedRental.startTime);
+        const returnTime = dayjs(endTime);
+        const duration = returnTime.diff(startTime, 'hour');
+        const totalCost = duration * selectedRental.bikeId.pricePerHour;
+
         const response = await axios.put(
-          `http://localhost:5000/api/rentals/return/${selectedRental._id}`,
-          { endTime }, 
+          `https://bike-rental-reservation-system-backend-zeta.vercel.app/api/rentals/return/${selectedRental._id}`,
+          { endTime, totalCost, isPaid: false },  // Mark as unpaid
           {
             headers: {
-              Authorization: `Bearer ${token}`, 
+              Authorization: `Bearer ${token}`,
             },
           }
         );
@@ -94,7 +105,7 @@ const ReturnBikePage: React.FC = () => {
           setRentals(prevRentals =>
             prevRentals.map(rental =>
               rental._id === selectedRental._id
-                ? { ...rental, returnTime: endTime, isReturned: true, totalCost: response.data.data.totalCost }
+                ? { ...rental, returnTime: endTime, isReturned: true, totalCost: response.data.data.totalCost, isPaid: false }
                 : rental
             )
           );
@@ -155,7 +166,7 @@ const ReturnBikePage: React.FC = () => {
     {
       title: 'Action',
       key: 'action',
-      render: (text: any, record: BikeRental) => (
+      render: (_: unknown, record: BikeRental) => (
         <Button
           type="primary"
           onClick={() => {
@@ -183,17 +194,23 @@ const ReturnBikePage: React.FC = () => {
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-2xl md:text-2xl mb-4 text-center md:text-left">Return Bike</h1>
-      <Table
-        dataSource={rentals}
-        columns={columns}
-        rowKey="_id"
-        scroll={{ x: 800 }}
-        pagination={{ pageSize: 8 }}
-        className="rental-table"
-      />
+      {loading ? ( 
+        <div className="flex justify-center items-center" style={{ height: 'calc(100vh - 64px)' }}>
+        <Spin style={{ fontSize: '40px' }} />
+      </div>
+      ) : (
+        <Table
+          dataSource={rentals}
+          columns={columns}
+          rowKey="_id"
+          scroll={{ x: 800 }}
+          pagination={{ pageSize: 8 }}
+          className="rental-table"
+        />
+      )}
     </div>
   );
 };
 
 export default ReturnBikePage;
-      
+

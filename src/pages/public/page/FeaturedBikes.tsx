@@ -20,7 +20,7 @@ const FeaturedSection = () => {
   useEffect(() => {
     const fetchBikes = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/bikes');
+        const response = await axios.get('https://bike-rental-reservation-system-backend-zeta.vercel.app/api/bikes');
         console.log('API Response:', response.data);
 
         if (response.data && response.data.success && Array.isArray(response.data.data)) {
@@ -30,7 +30,7 @@ const FeaturedSection = () => {
         }
       } catch (error: any) {
         console.error('Error fetching bikes', error.message || error);
-        setError(`Error fetching bikes: ${error.message || error}`);
+        // setError(`Error fetching bikes: ${error.message || error}`);
       } finally {
         setLoading(false);
       }

@@ -28,9 +28,6 @@ const BikeListingPage: React.FC = () => {
     setIsModalVisible(true);
   };
 
-
-
-
   useEffect(() => {
     dispatch(fetchBikes());
   }, [dispatch]);
@@ -130,17 +127,16 @@ const BikeListingPage: React.FC = () => {
     {
       title: 'Actions',
       key: 'actions',
-      render: (text: any, record: any) => (
+      render: (record: any) => (
         <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-2">
           <Button onClick={() => handleEdit(record)} type="primary" className="mr-2">Edit</Button>
-          <Button type="primary" className="mr-2" onClick={handleCreateBike}>Create Bike</Button>
           <Popconfirm
             title="Are you sure to delete this bike?"
             onConfirm={() => handleDelete(record._id)}
             okText="Yes"
             cancelText="No"
           >
-            <Button type="danger" className="mr-2 bg-red-400 text-white hover:bg-red-300">Delete</Button>
+            <Button type="primary" danger className="mr-2 bg-red-400 text-white hover:bg-red-300">Delete</Button>
           </Popconfirm>
         </div>
       ),
@@ -153,36 +149,41 @@ const BikeListingPage: React.FC = () => {
 
   return (
     <div className="container mx-auto p-6">
-      <div className={`mb-4 flex ${isTablet ? 'flex-col space-y-4' : 'flex-wrap space-y-0 justify-between'}`}>
-        <Input
-          placeholder="Search bikes"
-          value={searchText}
-          onChange={handleSearch}
-          className="w-full sm:w-[19%]"
-        />
-        <Select
-          placeholder="Filter by brand"
-          value={selectedBrand}
-          onChange={handleBrandChange}
-          allowClear
-          className="w-full sm:w-[16%]"
-        >
-          {uniqueBrands.map((brand) => (
-            <Option key={brand} value={brand}>{brand}</Option>
-          ))}
-        </Select>
-        <Select
-          placeholder="Filter by model"
-          value={selectedModel}
-          onChange={handleModelChange}
-          allowClear
-          className="w-full sm:w-[16%]"
-        >
-          {uniqueModels.map((model) => (
-            <Option key={model} value={model}>{model}</Option>
-          ))}
-        </Select>
-        <Select
+          <div className={`mb-4 flex ${isTablet ? 'flex-col space-y-4' : 'flex-wrap space-y-0 justify-between'}`}>
+      <Input
+        placeholder="Search bikes by name"
+        value={searchText}
+        onChange={handleSearch}
+        className="w-full sm:w-[19%]"
+      />
+      <Select
+        placeholder="Filter by brand"
+        value={selectedBrand}
+        onChange={handleBrandChange}
+        className="w-full sm:w-[16%]"
+        allowClear
+      >
+        {uniqueBrands.map((brand: string) => (
+          <Option key={brand} value={brand}>
+            {brand}
+          </Option>
+        ))}
+      </Select>
+      <Select
+        placeholder="Filter by model"
+        value={selectedModel}
+        onChange={handleModelChange}
+        className="w-full sm:w-[16%]"
+        allowClear
+      >
+        {uniqueModels.map((model: string) => (
+          <Option key={model} value={model}>
+            {model}
+          </Option>
+        ))}
+      </Select>
+     
+      <Select
           placeholder="Filter by availability"
           value={selectedAvailability}
           onChange={handleAvailabilityChange}
@@ -193,48 +194,41 @@ const BikeListingPage: React.FC = () => {
             <Option key={isAvailable.toString()} value={isAvailable}>{isAvailable ? 'Available' : 'Not Available'}</Option>
           ))}
         </Select>
-        <InputNumber
-          placeholder="Min Price"
-          value={minPrice}
-          onChange={handleMinPriceChange}
-          className="w-full sm:w-[16%]"
-        />
-        <InputNumber
-          placeholder="Max Price"
-          value={maxPrice}
-          onChange={handleMaxPriceChange}
-          className="w-full sm:w-[16%]"
-        />
-      </div>
-      <BikeFormModal
-        visible={isModalVisible}
-        onClose={handleModalClose}
-        bike={selectedBike}
+      
+      <InputNumber
+        placeholder="Min Price"
+        value={minPrice}
+        onChange={handleMinPriceChange}
+        className="w-full sm:w-[16%]"
       />
-      <Table
-        columns={columns}
-        dataSource={filteredBikes}
-        rowKey="_id"
-        scroll={{ x: 800 }}
-        bordered
-        pagination={{ pageSize: 8 }}
-       
+      <InputNumber
+        placeholder="Max Price"
+        value={maxPrice}
+        onChange={handleMaxPriceChange}
+        className="w-full sm:w-[16%]"
       />
     </div>
-  );
+    <Button type="primary" onClick={handleCreateBike} className="mb-4">
+      Create Bike
+    </Button>
+    <Table
+      columns={columns}
+      dataSource={filteredBikes}
+      rowKey={(record) => record._id}
+      scroll={{ x: 800 }}
+      bordered
+      pagination={{ pageSize: 8 }}
+    />
+    <BikeFormModal
+      visible={isModalVisible}
+      onClose={handleModalClose}
+      bike={selectedBike}
+    />
+  </div>
+);
 };
 
 export default BikeListingPage;
-
-
-
-
-
-
-
-
-
-
 
 
 

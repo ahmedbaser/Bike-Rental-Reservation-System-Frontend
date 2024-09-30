@@ -3,10 +3,9 @@ import authReducer from './reducers/authReducer';
 import couponReducer from './reducers/couponReducer';
 import { bikeReducer } from './reducers/bikeReducer';
 import { userReducer } from './reducers/userReducer';
-import { rentalReducer } from './reducers/rentalReducer';
+import rentalReducer from './reducers/rentalReducer';
 
 const token = localStorage.getItem('token');
-console.log(token)
 
 const preloadedState = {
   auth: {
@@ -16,10 +15,16 @@ const preloadedState = {
     loading: false,
     error: null,
   },
+
   rental: {
+    rentals: [],  
     unpaid: [],
     paid: [],
+    loading: false,
+    error: null,
   },
+
+
   coupon: {
     coupons: [],
     loading: false,
@@ -43,3 +48,25 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 
 export default store;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

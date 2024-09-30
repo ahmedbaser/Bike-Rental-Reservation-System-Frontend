@@ -49,9 +49,6 @@ const SignUp: React.FC = () => {
         <Form.Item label='Address' name='address' rules={[{required:true}]}>
           <Input placeholder="Enter your address"/>
         </Form.Item>
-        <Form.Item label='Role' name='role' rules={[{required:true}]}>
-          <Input placeholder="Enter your role"/>
-        </Form.Item>
         <Form.Item>
           <Button type="primary" htmlType="submit" loading={loading}>Sign Up</Button>
         </Form.Item>

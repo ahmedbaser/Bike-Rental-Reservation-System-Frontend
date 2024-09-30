@@ -54,7 +54,7 @@ export default tseslint.config({
 
                                   Frontend Code Summary
 
-
+                           Bike Rental Reservation System Frontend
 
 1. State Management with Redux
 Reducers:
@@ -175,7 +175,7 @@ PrivateRoute and AdminRoute: Components for protecting routes based on user auth
 
 # UserPassword and Email
 Email:user222@gmail.com
-Password:User222
+Password:User222 or you can signUp new user in signUp section
 
 # AdminPassword and Email
 Email:Admin222@gmail.com
