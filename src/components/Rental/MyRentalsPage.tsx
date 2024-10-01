@@ -65,7 +65,6 @@ const MyRentalPage: React.FC = () => {
     fetchRentals();
   }, []);
 
-
   const handlePayment = async (rentalId: string, totalCost: number) => {
     try {
       const token = localStorage.getItem('token');
@@ -104,72 +103,43 @@ const MyRentalPage: React.FC = () => {
     }
   };
 
-  const columns = [
+  const columnsUnpaid = [
     { title: 'Bike', dataIndex: ['bikeId', 'name'], key: 'bikeName' },
     { title: 'Start Time', dataIndex: 'startTime', key: 'startTime', render: (startTime: string) => dayjs(startTime).format('YYYY-MM-DD HH:mm') },
-    { title: 'Return Time', dataIndex: 'returnTime', key: 'returnTime', render: (returnTime: string) => returnTime ? dayjs(returnTime).format('YYYY-MM-DD HH:mm') : 'Pending' },
+    { title: 'Return Time', dataIndex: 'returnTime', key: 'returnTime', render: (returnTime: string) => returnTime ? dayjs(returnTime).format('YYYY-MM-DD HH:mm') : 'N/A' },
     { title: 'Total Cost', dataIndex: 'totalCost', key: 'totalCost', render: (totalCost: number) => totalCost ? `$${totalCost}` : 'Pending' },
-    {
-      title: 'Status',
-      dataIndex: 'isReturned',
-      key: 'status',
-      render: (isReturned: boolean) => isReturned ? 'Returned' : 'Ongoing'
-    },
-    {
-      title: 'Payment Status',
-      key: 'paymentStatus',
-      render: (_: unknown, record: Rental) => {
-        const isPending = !record.returnTime || !record.totalCost || !record.isReturned;
-        return isPending ? 'Unpaid' : 'Paid';
-      }
-    },
-    {
-      title: 'Action',
-      key: 'action',
-      render: (_: unknown, record: Rental) => {
-        const isPending = !record.returnTime && !record.totalCost && !record.isReturned;
+    { title: 'Status', dataIndex: 'isReturned', key: 'status', render: (isReturned: boolean) => isReturned ? 'Returned' : 'Pending' },
+    { title: 'Action', key: 'action', render: (_: unknown, record: Rental) => (
+        <Button
+          type="primary"
+          onClick={() => handlePayment(record._id, record.totalCost || 0)}
+          disabled={!record.totalCost || record.isPaid}
+        >
+          Pay
+        </Button>
+      ) },
+  ];
 
-        return (
-          record.isPaid || isPending ? (
-            <span>{isPending ? 'Unpaid' : 'Paid'}</span>
-          ) : (
-            <Button type="primary" onClick={() => handlePayment(record._id, record.totalCost || 0)}>
-              Pay Now
-            </Button>
-          )
-        );
-      }
-    }
+  const columnsPaid = [
+    { title: 'Bike', dataIndex: ['bikeId', 'name'], key: 'bikeName' },
+    { title: 'Start Time', dataIndex: 'startTime', key: 'startTime', render: (startTime: string) => dayjs(startTime).format('YYYY-MM-DD HH:mm') },
+    { title: 'Return Time', dataIndex: 'returnTime', key: 'returnTime', render: (returnTime: string) => returnTime ? dayjs(returnTime).format('YYYY-MM-DD HH:mm') : 'N/A' },
+    { title: 'Total Cost', dataIndex: 'totalCost', key: 'totalCost', render: (totalCost: number) => totalCost ? `$${totalCost}` : 'Pending' },
+    { title: 'Payment Status', dataIndex: 'isPaid', key: 'isPaid', render: (isPaid: boolean) => isPaid ? 'Paid' : 'Unpaid' },
   ];
 
   return (
-    <div className="container mx-auto p-4 md:p-6">
-      <h1 className="text-2xl md:text-3xl mb-4 text-center md:text-left">My Rentals</h1>
-
-      {/* Display loading spinner if loading is true */}
+    <div className="container mx-auto p-6">
+      <h1 className="text-2xl mb-4 text-center">My Rentals</h1>
       {loading ? (
-        <div className="flex justify-center items-center h-64">
-          <Spin style={{fontSize: '40px'}} />
-        </div>
+        <Spin size="large" />
       ) : (
-        <Tabs defaultActiveKey="1" size="large">
-          <Tabs.TabPane tab="Unpaid Rentals" key="1">
-            <Table
-              dataSource={rentals.filter(r => !r.isPaid)}
-              columns={columns}
-              rowKey="_id"
-              pagination={{ pageSize: 5 }} 
-              scroll={{ x: 'max-content' }} 
-            />
+        <Tabs defaultActiveKey="unpaid">
+          <Tabs.TabPane tab="Unpaid" key="unpaid">
+            <Table dataSource={rentals.filter(rental => !rental.isPaid)} columns={columnsUnpaid} rowKey="_id" />
           </Tabs.TabPane>
-          <Tabs.TabPane tab="Paid Rentals" key="2">
-            <Table
-              dataSource={rentals.filter(r => r.isPaid)}
-              columns={columns}
-              rowKey="_id"
-              pagination={{ pageSize: 5 }} 
-              scroll={{ x: 'max-content' }} 
-            />
+          <Tabs.TabPane tab="Paid" key="paid">
+            <Table dataSource={rentals.filter(rental => rental.isPaid)} columns={columnsPaid} rowKey="_id" />
           </Tabs.TabPane>
         </Tabs>
       )}

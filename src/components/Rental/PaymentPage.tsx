@@ -10,6 +10,10 @@ const stripePromise = loadStripe(import.meta.env.VITE_APP_STRIPE_PUBLIC_KEY);
 const PaymentPage: React.FC = () => {
     const { rentalId } = useParams<{ rentalId: string }>();
 
+
+  if (!stripePromise) {
+    return <div>Loading Stripe...</div>;
+  }
     if (!rentalId) {
         return <div>Error: Rental ID is required</div>;
     }

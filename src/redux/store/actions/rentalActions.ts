@@ -4,6 +4,8 @@ import { RentalActionTypes, Rental } from "../../types/rentalTypes";
 import { RootState } from "..";
 
 
+
+
 // Book a bike action
 export const bookBike = (bikeId: string, startTime: string, advancePayment: number) => async (dispatch: Dispatch<RentalActionTypes>,getState: () => RootState
 ) => {
