@@ -132,7 +132,9 @@ const MyRentalPage: React.FC = () => {
     <div className="container mx-auto p-6">
       <h1 className="text-2xl mb-4 text-center">My Rentals</h1>
       {loading ? (
-        <Spin size="large" />
+        <div className="flex justify-center items-center" style={{ height: 'calc(100vh - 64px)' }}>
+        <Spin style={{ fontSize: '40px' }} />
+      </div>
       ) : (
         <Tabs defaultActiveKey="unpaid">
           <Tabs.TabPane tab="Unpaid" key="unpaid">

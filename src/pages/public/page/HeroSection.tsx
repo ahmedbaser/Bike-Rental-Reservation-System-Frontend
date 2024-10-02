@@ -44,7 +44,7 @@ const HeroSection = () => {
   };
 
   return (
-    <div className="relative h-screen bg-cover bg-center" style={{ backgroundImage: "url('https://bd.gaadicdn.com/processedimages/suzuki/2019-gixxer/494X300/2019-gixxer63e5f65b5d876.jpg?imwidth=412&impolicy=resize')" }}>
+    <div className="relative h-screen bg-cover bg-center" style={{ backgroundImage: "url('/images/bikeBanner.jpg')" }}>
       <div className="absolute inset-0 bg-black opacity-50"></div>
       <div className="relative z-10 flex flex-col items-center justify-center h-full text-white text-center">
         <h1 className="text-4xl font-bold mb-6">Rent Your Dream Bike Today!</h1>
