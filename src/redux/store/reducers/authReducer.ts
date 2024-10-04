@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { loginUser, signupUser } from "../actions/authActions";
-import { LoginResponse, SignUpResponse } from "../../../model/model";
+import { loginUser, signUpUser } from "../actions/authActions";
+import { LoginResponse, } from "../../../model/model";
 
 interface AuthState {
     isAuthenticated: boolean;
@@ -40,26 +40,19 @@ const authSlice = createSlice({
     },
     extraReducers: (builder) => {
         // Handle signup
-        builder.addCase(signupUser.pending, (state) => {
+        builder.addCase(signUpUser.pending, (state) => {
             state.loading = true;
             state.error = null;
         });
-        builder.addCase(signupUser.fulfilled, (state, action: PayloadAction<SignUpResponse>) => { 
+        builder.addCase(signUpUser.fulfilled, (state,) => { 
             state.loading = false;
-            state.isAuthenticated = true;
-            state.token = null; 
-            state.user = {
-                _id: action.payload.data._id,
-                name: action.payload.data.name,
-                email: action.payload.data.email,
-                phone: action.payload.data.phone,
-                address: action.payload.data.address,
-                role: action.payload.data.role,
-                
-            };
+            state.isAuthenticated = false;
+            state.token = null;
+            state.user = null;
+            
         });
 
-        builder.addCase(signupUser.rejected, (state, action) => {
+        builder.addCase(signUpUser.rejected, (state, action) => {
             state.loading = false;
             state.error = action.error.message || "Something went wrong during signup.";
         });
@@ -96,23 +89,6 @@ export const { logout } = authSlice.actions;
 
 // Export the reducer
 export default authSlice.reducer;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

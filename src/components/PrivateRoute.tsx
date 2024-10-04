@@ -22,3 +22,4 @@ const PrivateRoute: React.FC<PrivateRouteProps> = ({ children, isAdmin = false }
 };
 
 export default PrivateRoute;
+

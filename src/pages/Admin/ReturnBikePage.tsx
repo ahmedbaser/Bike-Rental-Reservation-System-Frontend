@@ -33,59 +33,58 @@ const ReturnBikePage: React.FC = () => {
   const [endTime, setEndTime] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [calculating, setCalculating] = useState(false); 
+  const [calculating, setCalculating] = useState(false);
+  const [currentPage, setCurrentPage] = useState<number>(1); 
+  const [pageSize, setPageSize] = useState<number>(8); 
 
   useEffect(() => {
-    const fetchRentals = async () => {
-      try {
-        setLoading(true);
-        const token = localStorage.getItem('token');
-        if (!token) {
-          notification.error({
-            message: 'Error',
-            description: 'Token not found. Please log in.',
-          });
-          return;
-        }
+    fetchRentals(currentPage, pageSize); 
+  }, [currentPage, pageSize]); 
 
-        const response = await axios.get(
-          'https://bike-rental-reservation-system-backend-zeta.vercel.app/api/rentals/admin',
-          { headers: { Authorization: `Bearer ${token}` } }
-        );
-
-        const fetchedRentals = response.data.data;
-        const validRentals = fetchedRentals.filter((rental: BikeRental) => rental.bikeId);
-        setRentals(validRentals);
-      } catch (error) {
-        console.error('Failed to fetch rentals', error);
+  const fetchRentals = async (page: number, size: number) => {
+    try {
+      setLoading(true);
+      const token = localStorage.getItem('token');
+      if (!token) {
         notification.error({
           message: 'Error',
-          description: 'Failed to fetch rentals. Please try again.',
+          description: 'Token not found. Please log in.',
         });
-      } finally {
-        setLoading(false);
+        return;
       }
-    };
 
-    fetchRentals();
-  }, []);
+      const response = await axios.get(
+        `https://bike-rental-reservation-system-backend-zeta.vercel.app/api/rentals/admin?page=${page}&size=${size}`, 
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
 
-  
+      const fetchedRentals = response.data.data;
+      const validRentals = fetchedRentals.filter((rental: BikeRental) => rental.bikeId);
+      setRentals(validRentals);
+    } catch (error) {
+      console.error('Failed to fetch rentals', error);
+      notification.error({
+        message: 'Error',
+        description: 'Failed to fetch rentals. Please try again.',
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleCalculate = async () => {
-    setCalculating(true); 
     if (selectedRental && endTime) {
       try {
+        setCalculating(true);
         const token = localStorage.getItem('token');
         if (!token) {
           notification.error({
             message: 'Error',
             description: 'Token not found. Please log in.',
           });
-          setCalculating(false);
           return;
         }
-  
+
         const response = await axios.put(
           `https://bike-rental-reservation-system-backend-zeta.vercel.app/api/rentals/return/${selectedRental._id}`,
           { endTime },
@@ -95,42 +94,42 @@ const ReturnBikePage: React.FC = () => {
             },
           }
         );
-  
+
         if (response.data.success) {
           notification.success({
             message: 'Success',
-            description: response.data.message,
+            description: 'Bike returned successfully!',
           });
-  
-          const updatedRental = response.data.data.rental;
-          updatedRental.isPaid = false;  
-          const updatedRentals = rentals.map((rental) =>
-            rental._id === updatedRental._id ? updatedRental : rental
-          );
-          setRentals(updatedRentals);
-          setSelectedRental(null);
+
+          fetchRentals(currentPage, pageSize); 
+          // Close modal after successful update
           setIsModalVisible(false);
+          // Reset selected rental 
+          setSelectedRental(null);  
         } else {
-          throw new Error('Failed to return bike');
+          notification.error({
+            message: 'Error',
+            description: 'Failed to return the bike.',
+          });
         }
       } catch (error) {
         console.error('Failed to return bike', error);
         notification.error({
           message: 'Error',
-          description: 'Failed to return bike. Please try again.',
+          description: 'Failed to return the bike. Please try again.',
         });
       } finally {
-        setCalculating(false); 
+        setCalculating(false);
       }
+    } else {
+      notification.error({
+        message: 'Error',
+        description: 'Please select a valid end time.',
+      });
     }
   };
-  
+
   const columns = [
-    {
-      title: 'Bike ID',
-      dataIndex: ['bikeId', '_id'],
-      key: 'bikeId',
-    },
     {
       title: 'Bike Name',
       dataIndex: ['bikeId', 'name'],
@@ -151,19 +150,19 @@ const ReturnBikePage: React.FC = () => {
       title: 'Return Time',
       dataIndex: 'returnTime',
       key: 'returnTime',
-      render: (returnTime: string) => returnTime ? dayjs(returnTime).format('YYYY-MM-DD HH:mm') : 'N/A',
+      render: (returnTime: string) => (returnTime ? dayjs(returnTime).format('YYYY-MM-DD HH:mm') : 'N/A'),
     },
     {
       title: 'Total Cost',
       dataIndex: 'totalCost',
       key: 'totalCost',
-      render: (totalCost: number) => totalCost ? `$${totalCost}` : 'Pending',
+      render: (totalCost: number) => (totalCost ? `$${totalCost}` : 'Pending'),
     },
     {
       title: 'Status',
       dataIndex: 'isReturned',
       key: 'status',
-      render: (isReturned: boolean) => isReturned ? 'Returned' : 'Pending',
+      render: (isReturned: boolean) => (isReturned ? 'Returned' : 'Pending'),
     },
     {
       title: 'Action',
@@ -173,11 +172,12 @@ const ReturnBikePage: React.FC = () => {
           type="primary"
           onClick={() => {
             setSelectedRental(record);
-            setEndTime('');
+            setEndTime(''); 
             setIsModalVisible(true);
           }}
+          disabled={record.isReturned}
         >
-          Calculate
+          {record.isReturned ? 'Returned' : 'Calculate'}
         </Button>
       ),
     },
@@ -196,15 +196,22 @@ const ReturnBikePage: React.FC = () => {
             dataSource={rentals}
             columns={columns}
             rowKey="_id"
+            pagination={{
+              current: currentPage, 
+              pageSize: pageSize,
+              onChange: (page, size) => {
+                setCurrentPage(page);
+                setPageSize(size);  
+                fetchRentals(page, size); 
+              },
+            }}
             scroll={{ x: 800 }}
-            pagination={{ pageSize: 8 }}
-            className="rental-table"
           />
           <Modal
             title="Calculate Return"
             visible={isModalVisible}
             onOk={handleCalculate}
-            confirmLoading={calculating}  
+            confirmLoading={calculating}
             onCancel={() => setIsModalVisible(false)}
           >
             <Input
@@ -217,6 +224,6 @@ const ReturnBikePage: React.FC = () => {
       )}
     </div>
   );
-}
+};
 
 export default ReturnBikePage;

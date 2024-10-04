@@ -21,12 +21,14 @@ const LoginPage: React.FC = () => {
         message.success("User logged in successfully");
         navigate("/dashboard");
       } 
-    } catch (error) {
-      if(error instanceof Error) {
-        message.error(`Failed to login: ${error}`);
-      } else {
-        message.error('Failed to login: An unknown error occurred');
-      }
+    } catch (error: any) {
+      if(error.response) {
+        message.error(`Failed to login: ${error.response.data.message}`);
+       } else if(error instanceof Error) {
+        message.error(`Failed to login: ${error.message}`);
+    } else {
+      message.error('Failed to login: An unknown error occurred');
+    }
     } finally {
       setLoading(false);
     }
@@ -52,3 +54,5 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+
+

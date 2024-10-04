@@ -34,7 +34,7 @@ export interface  LoginResponse  {
 }
 
 
-export const signupUser = createAsyncThunk(
+export const signUpUser = createAsyncThunk(
     'auth/signupUser',
     async(userData: SignUpPayload) => {
         const  response = await axios.post('https://bike-rental-reservation-system-backend-zeta.vercel.app/api/auth/signup', userData);

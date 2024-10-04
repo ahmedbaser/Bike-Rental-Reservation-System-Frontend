@@ -129,19 +129,34 @@ const MyRentalPage: React.FC = () => {
   ];
 
   return (
-    <div className="container mx-auto p-6">
-      <h1 className="text-2xl mb-4 text-center">My Rentals</h1>
+    <div className="container mx-auto p-4 md:p-6">
+      <h1 className="text-xl md:text-2xl mb-4 text-center md:text-left">My Rentals</h1>
       {loading ? (
         <div className="flex justify-center items-center" style={{ height: 'calc(100vh - 64px)' }}>
-        <Spin style={{ fontSize: '40px' }} />
-      </div>
+          <Spin style={{ fontSize: '40px' }} />
+        </div>
       ) : (
-        <Tabs defaultActiveKey="unpaid">
+        <Tabs defaultActiveKey="unpaid" size="large">
           <Tabs.TabPane tab="Unpaid" key="unpaid">
-            <Table dataSource={rentals.filter(rental => !rental.isPaid)} columns={columnsUnpaid} rowKey="_id" />
+            <div className="overflow-x-auto">
+              <Table 
+                dataSource={rentals.filter(rental => !rental.isPaid)} 
+                columns={columnsUnpaid} 
+                rowKey="_id" 
+                pagination={{ pageSize: 5 }} 
+              />
+            </div>
           </Tabs.TabPane>
           <Tabs.TabPane tab="Paid" key="paid">
-            <Table dataSource={rentals.filter(rental => rental.isPaid)} columns={columnsPaid} rowKey="_id" />
+            <div className="overflow-x-auto">
+              <Table 
+                dataSource={rentals.filter(rental => rental.isPaid)} 
+                columns={columnsPaid} 
+                rowKey="_id" 
+                // Added pagination for better usability on small screens
+                pagination={{ pageSize: 5 }} 
+              />
+            </div>
           </Tabs.TabPane>
         </Tabs>
       )}

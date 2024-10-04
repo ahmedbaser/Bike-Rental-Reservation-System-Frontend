@@ -11,19 +11,29 @@ const HistoryMilestones = () => {
             <h2 className="text-3xl font-bold text-center mb-6">Our Journey</h2>
             <div className="max-w-2xl mx-auto">
                 {milestones.map((milestone, index) => (
-                    <div key={index} className="flex items-center mb-1">
-                       <div className="w-12 h-12 flex items-center justify-center bg-blue-500 text-white rounded-full">{milestone.year}</div> 
-                       <div className="ml-4">
-                        <p className="text-lg font-semibold mt-2">{milestone.event}</p>
-                        <p className="text-1xl">{milestone.text}</p>
-                      </div> 
+                    <div key={index} className="flex  items-center mb-6">
+                        <div className="w-12 h-12 flex items-center justify-center bg-blue-500 text-white rounded-full mb-4 ml-2 md:mb-0 md:mr-4">
+                            {milestone.year}
+                        </div>
+                        <div className="flex-1">
+                            <p className="text-lg font-semibold mt-2">{milestone.event}</p>
+                            <p className="text-base">{milestone.text}</p>
+                        </div>
                     </div>
                 ))}
             </div>
         </div>
-
     );
-
 };
 
 export default HistoryMilestones;
+
+
+
+
+
+
+
+
+
+

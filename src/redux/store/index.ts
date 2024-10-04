@@ -6,12 +6,13 @@ import { userReducer } from './reducers/userReducer';
 import rentalReducer from './reducers/rentalReducer';
 
 const token = localStorage.getItem('token');
+const user = token ? JSON.parse(localStorage.getItem('user') || 'null') : null;
 
 const preloadedState = {
   auth: {
     isAuthenticated: !!token,
     token: token,
-    user: token ? JSON.parse(localStorage.getItem('user') || 'null') : null,
+    user: user,
     loading: false,
     error: null,
   },
