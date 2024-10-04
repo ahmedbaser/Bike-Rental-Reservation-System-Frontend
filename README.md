@@ -173,20 +173,6 @@ PrivateRoute and AdminRoute: Components for protecting routes based on user auth
 # Custom Hooks and Components: 
   
 
-# UserPassword and Email
-Email:user222@gmail.com
-Password:User222 or you can signUp new user in signUp section
-
-# AdminPassword and Email
-Email:Admin222@gmail.com
-Password:Admin222
-
-# Stripe Information
-CardNumber: 4242 4242 4242 4242
-MM:12
-YY:24
-CVC:123
-ZIP:12345
 
 
 
